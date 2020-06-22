@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  backend:
+    image: notify-backend
+    build: ./
+    command: node server.js
+    ports:
+      - "3000:3000"
+      - "3002:3002"
+    depends_on:
+      - "mongo"
+  mongo:
+    image: mongo
+    ports:
+      - "21027:21027"
