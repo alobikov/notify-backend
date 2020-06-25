@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
   console.log("a user connected");
 });
 
-http.listen(3000, () => {
+http.listen(portWs, () => {
   console.log("listening on *:3000");
 });
 

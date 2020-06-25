@@ -18,7 +18,7 @@ var username = webUsername; // assign the value from constants.js
 socket.on("your-name", (name) => {
   usernameContainer.value = name;
   username = name;
-  getUsers(urlApi + "/users").then((users) => createDropDown(users));
+  getUsers("/users").then((users) => createDropDown(users));
 });
 
 socket.on("connect", () => {
@@ -62,7 +62,7 @@ messageForm.addEventListener("click", (e) => {
     to: to,
     from: username,
   };
-  fetch(urlApi + "/message", {
+  fetch("/message", {
     method: "POST",
     headers: {
       "Content-Type": "application/json;charset=utf-8",
