@@ -18,14 +18,11 @@ var username = webUsername; // assign the value from constants.js
 socket.on("your-name", (name) => {
   usernameContainer.value = name;
   username = name;
-<<<<<<< HEAD
-  getUsers("/users").then((users) => createDropDown(users));
-=======
   getUsers("/users").then((users) => {
       createDropDown(users);
->>>>>>> c5d8be5996b3bc8d88c421d3dc4f30692e4bcb85
-});
-
+    });
+  });
+      
 socket.on("connect", () => {
   console.log("socket connected!");
 });

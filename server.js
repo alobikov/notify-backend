@@ -53,11 +53,7 @@ io.on("connection", (socket) => {
 });
 
 http.listen(portWs, () => {
-<<<<<<< HEAD
-  console.log("listening on *:3000");
-=======
   console.log("listening on port:", portWs);
->>>>>>> c5d8be5996b3bc8d88c421d3dc4f30692e4bcb85
 });
 
 async function start() {
