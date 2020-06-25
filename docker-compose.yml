@@ -3,13 +3,17 @@ version: "2"
 services:
   backend:
     image: notify-backend
+    restart: always
     build: ./
-    command: node server.js
+    command: node server.js 2>&1 | tee ${HOME}/.notify/server.log
     ports:
       - "3000:3000"
     depends_on:
       - "mongo"
   mongo:
     image: mongo
+    restart: always
     ports:
       - "21027:21027"
+    volumes:
+      - "${HOME}/.notify:data/db"
