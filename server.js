@@ -23,7 +23,7 @@ socketio должна работать даже при отсуствии db.
 */
 
 const createMock = require("./utils/createMock"),
-  getAllMessages = require("./utils/mongo"),
+  db = require("./utils/mongo"),
   Message = require("./models/Message"), // db record schema
   mongoose = require("mongoose"),
   chalk = require("chalk"),
@@ -32,10 +32,10 @@ const createMock = require("./utils/createMock"),
   // app = express(),
   portExpress = process.env.IP_WEBSITE_PORT || 3002,
   portWs = process.env.IP_SOCKETIO_PORT || 3000,
-  url = process.env.IP_ADDRESS || "mongo",
+  url = process.env.DB_IP_ADDRESS || "mongo",
   mongodbUrl = `mongodb://${url}/notify`,
   webUserNames = ["Web-Brat", "Web-Dog", "Web-Guy", "Web-Dev"];
-
+console.log({ url });
 // this is storage for socketio subscribers
 // it is being hold only in RAM as user dynamiclly
 // reconnects to socketio;
@@ -97,7 +97,15 @@ function runExpress() {
   //**************************** API GET MESSAGES ******************************/
   app.get("/messages", async function (req, res) {
     console.log('GET on "/messages" recieved');
-    res.json(await getAllMessages());
+    res.json(await db.getAllMessages());
+  });
+  //**************************** API GET MESSAGES ******************************/
+  app.get("/messages/delete", async function (req, res) {
+    console.log('GET on "/messages/delete" recieved');
+    mongoose.connection.db.dropCollection("messages", function (err, result) {
+      console.log("done");
+      res.send("All records deleted");
+    });
   });
   //**************************** API GET USERS *********************************/
   app.get("/users", function (req, res) {

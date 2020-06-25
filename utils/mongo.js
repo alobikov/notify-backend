@@ -18,4 +18,4 @@ async function getAllMessages() {
   return messages;
 }
 
-module.exports = getAllMessages;
+module.exports = { getAllMessages };

@@ -8,7 +8,7 @@
     "notify"
   ],
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "set DB_IP_ADDRESS=localhost & nodemon server.js"
   },
   "author": "Aleksej Lobikov",
   "license": "ISC",
