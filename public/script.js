@@ -19,10 +19,17 @@ socket.on("your-name", (name) => {
   usernameContainer.value = name;
   username = name;
   getUsers("/users").then((users) => {
+<<<<<<< HEAD
     createDropDown(users);
   });
 });
 
+=======
+      createDropDown(users);
+    });
+  });
+      
+>>>>>>> 16b6c14965a95979184a88b8c9d87740df1a3207
 socket.on("connect", () => {
   console.log("socket connected!");
 });
