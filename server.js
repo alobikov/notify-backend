@@ -40,24 +40,20 @@ const createMock = require("./utils/createMock"),
 // it is being hold only in RAM as user dynamiclly
 // reconnects to socketio;
 // holds {socket.id : user} pairs
-var users = {};
+const users = {};
 
-var app = require("express")();
-var http = require("http").createServer(app);
-var io = require("socket.io")(http);
+const app = require("express")(),
+  http = require("http").createServer(app),
+  io = require("socket.io")(http);
 
 app.use(express.static(path.join(__dirname, "public")));
-
-// app.get("/", (req, res) => {
-//   res.sendFile(__dirname + "/index.html");
-// });
 
 io.on("connection", (socket) => {
   console.log("a user connected");
 });
 
-http.listen(3000, () => {
-  console.log("listening on *:3000");
+http.listen(portWs, () => {
+  console.log("listening on port:", portWs);
 });
 
 async function start() {
@@ -111,6 +107,7 @@ function runExpress() {
     });
     console.log(usersJson[0]);
     if (typeof usersJson[0] === "undefined") {
+      git;
       res.send(`<h2>There is no registred users yet.</h2>`);
     } else {
       res.json(usersJson);

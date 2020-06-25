@@ -1,4 +1,4 @@
-// const socket = io("http://localhost:3000", { username: "Aleksej" });
+const socket = io();
 const selectContainer = document.getElementById("select-container");
 const messageForm = document.getElementById("send-button");
 const messageInput = document.getElementById("message-input");
@@ -9,40 +9,43 @@ const usernameContainer = document.getElementById("username-container");
 const urlApi = urlExpress + ":" + portExpress;
 
 console.log("Socket.io", socket.io);
-console.log(navigator.userAgent.toLowerCase());
 
 var username = webUsername; // assign the value from constants.js
 
-/// on socketio 'connection' server advicing username
-/// Web client shoul follow this advice
+/// on 'connection' server advicing username
+/// Web client should follow this advice,
+/// (while mobile terminal will overwrite adviced name)
 socket.on("your-name", (name) => {
   usernameContainer.value = name;
   username = name;
-  getUsers(urlApi + "/users").then((users) => createDropDown(users));
+  getUsers("/users").then((users) => {
+      createDropDown(users);
 });
 
 socket.on("connect", () => {
-  console.log("socket connected");
+  console.log("socket connected!");
 });
 
 socket.on("message", ({ message, from }) => {
   console.log({ message });
   addMessage(`${from}: ${message}`);
 });
+
+//? currently not used
 socket.on("user-connected", (data) => {
-  addMessage(`${data} connects to the chat!`);
+  console.log(`${data} joined socket.io`);
 });
 
+//? currently not used
 socket.on("user-disconnected", (name) => {
-  addMessage(`${name} disconnects from the chat :(`);
+  console.log(`${name} disconnected from socket.io :(`);
 });
 
 socket.on("send-message", (data) => {
-  console.log(data);
+  console.log("Send-message received:", data);
 });
 
 messageForm.addEventListener("click", (e) => {
-  console.log("send button clicked");
   e.preventDefault();
   const message = messageInput.value;
   const to = selectContainer.value;
@@ -55,14 +58,14 @@ messageForm.addEventListener("click", (e) => {
     return;
   }
   clearError();
-  console.log("continue send submit");
-  // socket.emit("send-message", { body: message });
+
+  // POST the message
   let body = {
     message: message,
     to: to,
     from: username,
   };
-  fetch(urlApi + "/message", {
+  fetch("/message", {
     method: "POST",
     headers: {
       "Content-Type": "application/json;charset=utf-8",
@@ -72,9 +75,11 @@ messageForm.addEventListener("click", (e) => {
     res.json().then((json) => console.log(json));
   });
 
+  // clear message input field
   messageInput.value = "";
 });
 
+// append message at the bottom of message view area
 function addMessage(message) {
   const messageElement = document.createElement("li");
   messageElement.innerText = message;
@@ -97,7 +102,7 @@ async function getUsers(url) {
 }
 
 /// create view elements for dropdown user list
-/// input: array of strings
+/// input: List<String>
 function createDropDown(users) {
   let optionElement;
   users.forEach((user) => {
