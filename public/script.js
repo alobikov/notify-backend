@@ -19,7 +19,8 @@ socket.on("your-name", (name) => {
   usernameContainer.value = name;
   username = name;
   getUsers("/users").then((users) => {
-      createDropDown(users);
+    createDropDown(users);
+  });
 });
 
 socket.on("connect", () => {
