@@ -2,8 +2,8 @@
 
 
 Requirtements: 
-  docker-engine: 17.04.0+
-  docker-compose version 3.2
+  * docker-engine: 17.04.0+
+  * docker-compose version 3.2
 
 To compile and start:
   docker-compose up -d
