@@ -6,18 +6,18 @@ Requirtements:
   * docker-compose version 3.2
 
 To compile and start:
-  docker-compose up -d
+  **docker-compose up -d**
   
 To kill and clear:
-  docker-compose down
+  **docker-compose down**
   
-To stop:
-  docker-compose stop
+Just to stop:
+  **docker-compose stop**
   
 To start again:
-  docker-compose start
+  **docker-compose start**
   
 View logs:
-  docker logs notify-backend
+  **docker logs notify-backend**
   
 
