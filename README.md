@@ -21,3 +21,4 @@ View logs:
   **docker logs notify-backend**
   
 
+There is web interface for testing API. Access it on port 3000.
