@@ -3,7 +3,10 @@
 version=$(node -v)
 if [ $? ]; then
     echo  "Nodejs version $version: OK"
-fi    
+elif
+   echo "Installing Node.js and npm..."
+   sudo apt install nodejs npm
+fi
 
 # check for MongoDb
 version=$(sudo /usr/bin/mongod --version) 
