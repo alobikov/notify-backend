@@ -3,7 +3,7 @@
 version=$(node -v)
 if [ $? ]; then
     echo  "Nodejs version $version: OK"
-elif
+else
    echo "Installing Node.js and npm..."
    sudo apt install nodejs npm
 fi
