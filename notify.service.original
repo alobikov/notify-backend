@@ -1,13 +1,13 @@
 [Unit]
 Description=server.js - backend for Notify service
-Documentation=http://localhost:3000
+Documentation=https://example.com
 After=network.target
 
 [Service]
 Environment=NODE_PORT=3000
 Type=simple
-User=ntfadmin
-ExecStart=/usr/bin/node /c/Users/Aleks/development/notify/servers/backend/server.js
+User=laleks
+ExecStart=/usr/bin/node /home/laleks/notify-backend/server.js
 Restart=on-failure
 
 [Install]

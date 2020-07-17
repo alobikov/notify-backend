@@ -11,4 +11,5 @@ ExecStart=/usr/bin/node /c/Users/Aleks/development/notify/servers/backend/server
 Restart=on-failure
 
 [Install]
+sdfgsdfghsdfg
 WantedBy=multi-user.target
