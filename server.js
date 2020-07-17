@@ -32,7 +32,7 @@ const createMock = require("./utils/createMock"),
   // app = express(),
   portExpress = process.env.IP_WEBSITE_PORT || 3002,
   portWs = process.env.IP_SOCKETIO_PORT || 3000,
-  url = process.env.DB_IP_ADDRESS || "mongo",
+  url = process.env.DB_IP_ADDRESS || "localhost", // use mongo here if docker-compose deployment
   mongodbUrl = `mongodb://${url}/notify`,
   webUserNames = ["Web-Brat", "Web-Dog", "Web-Guy", "Web-Dev"];
 console.log({ url });
@@ -49,11 +49,11 @@ const app = require("express")(),
 app.use(express.static(path.join(__dirname, "public")));
 
 io.on("connection", (socket) => {
-  console.log("a user connected");
+  console.log("A user connected to socket.io");
 });
 
 http.listen(portWs, () => {
-  console.log("listening on port:", portWs);
+  console.log("Express listening on port:", portWs);
 });
 
 async function start() {
