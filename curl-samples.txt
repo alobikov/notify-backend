@@ -1,0 +1,5 @@
+// post message to server
+curl -d '{"message":"Test message","to":"Web-Dev","from":"Web-Dev"}' -H "Content-Type: application/json" -X POST http://localhost:3000/message
+// get messages
+curl http://localhost:3000/messages
+curl http://localhost:3000/users
