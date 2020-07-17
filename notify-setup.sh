@@ -15,13 +15,15 @@ fi
   echo [Unit] > $file
   echo Description=server.js - backend for Notify service >> $file
   echo Documentation=http://localhost:3000 >> $file
-  echo -e "After=network.target\n" >> $file
+  echo After=network.target >> $file
+  echo "" >> $file
   echo [Service] >> $file
   echo Environment=NODE_PORT=3000 >> $file
   echo Type=simple >> $file
   echo User=$username >> $file
   echo ExecStart=/usr/bin/node $pwd/server.js >> $file
-  echo -e "Restart=on-failure\n" >> $file
+  echo Restart=on-failure >> $file
+  echo "" >> $file
   echo [Install] >> $file
   echo WantedBy=multi-user.target >> $file
 
