@@ -1,7 +1,10 @@
 #!/bin/bash
+# !!! change directory to script location
+
 file=notify.service
 pwd=$(pwd)
-username=ntfadmin
+username=$(logname)
+
 if [ -e $file ]; then
   echo "Moving $file to $file.old"
   mv $file $file.old
@@ -12,7 +15,7 @@ fi
   echo [Unit] > $file
   echo Description=server.js - backend for Notify service >> $file
   echo Documentation=http://localhost:3000 >> $file
-  echo -e After="network.target\n" >> $file
+  echo -e "After=network.target\n" >> $file
   echo [Service] >> $file
   echo Environment=NODE_PORT=3000 >> $file
   echo Type=simple >> $file
