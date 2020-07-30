@@ -115,7 +115,6 @@ function runExpress() {
     });
     console.log(usersJson[0]);
     if (typeof usersJson[0] === "undefined") {
-      git;
       res.send(`<h2>There is no registred users yet.</h2>`);
     } else {
       res.json(usersJson);
