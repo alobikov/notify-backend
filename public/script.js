@@ -1,3 +1,7 @@
+const urlExpress = "http://localhost";
+const portExpress = 3000;
+const webUsername = "Web-Dev";
+
 const socket = io();
 const selectContainer = document.getElementById("select-container");
 const messageForm = document.getElementById("send-button");
@@ -8,13 +12,13 @@ const usernameContainer = document.getElementById("username-container");
 
 const urlApi = urlExpress + ":" + portExpress;
 
-console.log("Socket.io", socket.io);
+console.log("Socket.io", socket); //was socket.io
 
 var username = webUsername; // assign the value from constants.js
 
 /// on 'connection' server advicing username
 /// Web client should follow this advice,
-/// (while mobile terminal will overwrite adviced name)
+/// (while mobile terminal(bar code scanner) will ignore adviced name)
 socket.on("your-name", (name) => {
   usernameContainer.value = name;
   username = name;
