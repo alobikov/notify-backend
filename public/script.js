@@ -2,13 +2,15 @@ const urlExpress = "http://localhost";
 const portExpress = 3000;
 const webUsername = "Web-Dev";
 
-const socket = io();
+const socket = io("");
 const selectContainer = document.getElementById("select-container");
 const messageForm = document.getElementById("send-button");
 const messageInput = document.getElementById("message-input");
 const messageContainer = document.getElementById("message-container");
 const errorContainer = document.getElementById("error-message");
 const usernameContainer = document.getElementById("username-container");
+usernameContainer.value = "Error: WebSocket not connected!";
+usernameContainer.style.color = "red";
 
 const urlApi = urlExpress + ":" + portExpress;
 
@@ -21,6 +23,7 @@ var username = webUsername; // assign the value from constants.js
 /// (while mobile terminal(bar code scanner) will ignore adviced name)
 socket.on("your-name", (name) => {
   usernameContainer.value = name;
+  usernameContainer.style.color = "blue";
   username = name;
   getUsers("/users").then((users) => {
     createDropDown(users);

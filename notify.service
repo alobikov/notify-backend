@@ -7,7 +7,7 @@ After=network.target
 Environment=NODE_PORT=3000
 Type=simple
 User=ntfadmin
-ExecStart=/usr/bin/node /c/Users/Aleks/development/notify/servers/backend/server.js
+ExecStart=/usr/bin/node /home/ntfadmin/source/notify-backend/server.js
 Restart=on-failure
 
 [Install]

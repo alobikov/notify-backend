@@ -1,5 +1,5 @@
 #!/bin/bash
-# !!! change directory to script location
+# !!! cd to script location
 
 file=notify.service
 pwd=$(pwd)

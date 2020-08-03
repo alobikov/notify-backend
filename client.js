@@ -1,3 +1,5 @@
+// this is console app for testing socket.io-client
+
 const io = require("socket.io-client"),
   socket = io.connect("http://localhost:3000"),
   chalk = require("chalk");
