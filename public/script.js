@@ -4,7 +4,7 @@ const webUsername = "Web-Dev";
 
 const socket = io("");
 const selectContainer = document.getElementById("select-container");
-const messageForm = document.getElementById("send-button");
+const messageForm = document.querySelector("form");
 const messageInput = document.getElementById("message-input");
 const messageContainer = document.getElementById("message-container");
 const errorContainer = document.getElementById("error-message");
@@ -53,7 +53,7 @@ socket.on("send-message", (data) => {
   console.log("Send-message received:", data);
 });
 
-messageForm.addEventListener("click", (e) => {
+messageForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const message = messageInput.value;
   const to = selectContainer.value;
