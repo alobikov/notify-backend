@@ -1,82 +1,122 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
     <title>Notify Test</title>
     <!-- <script defer src="http://localhost:3000/socket.io/socket.io.js"></script> -->
 
     <style>
-        .parent {
-            height: 800px;
-            width: 500px;
-            display: flex;
-        }
+      .parent {
+        height: 800px;
+        width: 500px;
+        display: flex;
+      }
 
-        .child {
-            height: 40px;
-            width: 100%;
-            align-self: flex-end;
-        }
+      .child {
+        height: 40px;
+        width: 100%;
+        align-self: flex-end;
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <div class="container">
-        <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
-            <h1>Notify testing page</h1>
-            <br />
-            <small>use wisely</small>
+      <div style="background-color: #e3f2fd;">
+        <nav class="navbar navbar-light">
+          <h1>Notify testing page</h1>
+          <br />
+          <small>use wisely</small>
         </nav>
+
+        <div class="version" style="padding-left: 1rem; padding-bottom: 1rem;">
+          version 1.1.0
+        </div>
+        <div class="status" style="padding-left: 1rem; padding-bottom: 1rem;">
+          Status: WebSocket not registred.
+        </div>
+      </div>
+      <form action="" class="form-username">
         <div class="input-group mt-4">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Username</span>
+          </div>
+          <input
+            placeholder="Assign username prior to registration"
+            type="text"
+            class="form-control"
+            id="username-container"
+            name="username"
+          />
+          <button
+            class="mx-1 btn btn-danger btn btn-register"
+            type="submit"
+            id="register-button"
+          >
+            Register
+          </button>
+        </div>
+      </form>
+      <div>
+        <a
+          class="my-4 btn btn-primary btn"
+          target="_blank"
+          href="/users"
+          role="button"
+          >List all users</a
+        >
+      </div>
+      <div>
+        <a
+          class="mb-4 btn btn-primary btn"
+          target="_blank"
+          href="/messages"
+          role="button"
+          >List all messages</a
+        >
+      </div>
+      <form class="form-send">
+        <div class="form-row">
+          <div class="input-group mb-3">
             <div class="input-group-prepend">
-                <span class="input-group-text">Username</span>
+              <button
+                disabled
+                class="mx-1 btn btn-primary btn"
+                type="submit"
+                id="send-button"
+              >
+                Send
+              </button>
+              <select class="custom-select mr-sm-2" id="select-container">
+                <option selected>Message to...</option>
+              </select>
             </div>
-            <input disabled type="text" class="form-control" id="username-container">
+            <input type="text" class="form-control" id="message-input" />
+          </div>
+          <div class="container">
+            <div class="col mb-3" id="error-message" style="color: red;"></div>
+            <ul
+              style="list-style-type: none;"
+              class="list-group"
+              id="message-container"
+            ></ul>
+          </div>
         </div>
-        <div>
-            <a class="my-4 btn btn-primary btn" target="_blank" href="/users" role="button">List
-                all
-                users</a>
-        </div>
-        <div>
-            <a class="mb-4 btn btn-primary btn" target="_blank" href="/messages" role="button">List
-                all
-                messages</a>
-        </div>
-        <form>
-            <div class="form-row">
-
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <button class="mx-1 btn btn-primary btn" type="submit" id="send-button">Send</button>
-                        <select class="custom-select mr-sm-2" id="select-container">
-                            <option selected>Message to...</option>
-                        </select>
-                    </div>
-                    <input type="text" class="form-control" id="message-input">
-                </div>
-                <div class="container">
-                    <div class="col mb-3" id="error-message" style="color: red"></div>
-                    <ul style="list-style-type:none" class="list-group" id="message-container">
-
-                    </ul>
-                </div>
-
-            </div>
-        </form>
+      </form>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/script.js"></script>
-
-
-</body>
-
+  </body>
 </html>

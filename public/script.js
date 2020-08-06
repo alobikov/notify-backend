@@ -1,62 +1,71 @@
 const urlExpress = "http://localhost";
 const portExpress = 3000;
-const webUsername = "Web-Dev";
 
-const socket = io("");
+
 const selectContainer = document.getElementById("select-container");
-const messageForm = document.querySelector("form");
+const messageForm = document.querySelector(".form-send");
 const messageInput = document.getElementById("message-input");
 const messageContainer = document.getElementById("message-container");
 const errorContainer = document.getElementById("error-message");
 const usernameContainer = document.getElementById("username-container");
-usernameContainer.value = "Error: WebSocket not connected!";
-usernameContainer.style.color = "red";
-
 const urlApi = urlExpress + ":" + portExpress;
+var username;
 
-console.log("Socket.io", socket); //was socket.io
+function initSocket(deviceID) {
+  /// on 'connection' server advicing username
+  /// Web client should follow this advice,
+  /// (while mobile terminal(bar code scanner) will ignore adviced name)
+  const socket = io("");
+  console.log("Socket.io", socket); //was socket.io
 
-var username = webUsername; // assign the value from constants.js
+  // binding socket events
 
-/// on 'connection' server advicing username
-/// Web client should follow this advice,
-/// (while mobile terminal(bar code scanner) will ignore adviced name)
-socket.on("your-name", (name) => {
-  usernameContainer.value = name;
-  usernameContainer.style.color = "blue";
-  username = name;
-  getUsers("/users").then((users) => {
-    createDropDown(users);
+  socket.on("your-name", (name) => {
+    console.log(`Server adviced name ${name} ignored!`)
+    getUsers("/users").then((users) => {
+      createDropDown(users);
+    });
   });
-});
 
-socket.on("connect", () => {
-  console.log("socket connected!");
-});
+  socket.on("connect", () => {
+    console.log("socket connected!");
+  });
 
-socket.on("message", ({ message, from }) => {
-  console.log({ message });
-  addMessage(`${from}: ${message}`);
-});
+  socket.on("user-confirmed", () => {
+    document.querySelector('.status').innerText="Status: Websocket connected. Username registration confirmed"
+    document.getElementById('send-button').removeAttribute('disabled');
+  });
 
-//? currently not used
-socket.on("user-connected", (data) => {
-  console.log(`${data} joined socket.io`);
-});
+  socket.on("message", ({ message, from }) => {
+    console.log("Message received", { message });
+    addMessage(`${from}: ${message}`);
+  });
 
-//? currently not used
-socket.on("user-disconnected", (name) => {
-  console.log(`${name} disconnected from socket.io :(`);
-});
+  //? currently not used
+  socket.on("user-connected", (data) => {
+    console.log(`${data} joined socket.io`);
+  });
 
-socket.on("send-message", (data) => {
-  console.log("Send-message received:", data);
-});
+  //? currently not used
+  socket.on("user-disconnected", (name) => {
+    console.log(`${name} disconnected from socket.io :(`);
+  });
+
+  socket.on("send-message", (data) => {
+    console.log("Send-message received:", data);
+  });
+
+  // registring own username (aka DeviceID) at server
+  socket.emit('new-user', deviceID);
+
+}
+//! binding control for Send Message
 
 messageForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const message = messageInput.value;
   const to = selectContainer.value;
+  console.log({username})
   if (selectContainer.selectedIndex === 0) {
     errorMessage("Error: Addressee is not selected");
     return;
@@ -85,6 +94,14 @@ messageForm.addEventListener("submit", (e) => {
 
   // clear message input field
   messageInput.value = "";
+});
+
+//! binding control for Register Button
+document.querySelector(".form-username").addEventListener("submit", (e) => {
+  e.preventDefault();
+  username = e.target.username.value.trim();
+  console.log({username});
+  initSocket(username);
 });
 
 // append message at the bottom of message view area

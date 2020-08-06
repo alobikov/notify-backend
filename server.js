@@ -1,6 +1,6 @@
 /*
 Что должен уметь сервер?
-У сервера два API. 
+У сервера два API.
 Первый - websockets, для работы с мобильными клиентами.
   Платформа Socket.io;
   Авторизация клиента по шаблону имени и возможно по сетке.
@@ -9,17 +9,17 @@
       disconnect
       send-message (custom) входящий, сообщение от мобильного клиета
       message (custom) исходящий, сообщение для мобильного клиента
-      new-user (custom) входящий, регистрация нового клиента 
-Второй интерфейс - для связи с CRM Dynamics.
+      new-user (custom) входящий, регистрация нового клиента
+Второй интерфейс - для связи с NAV Dynamics.
   Платформа Express.js;
   Авторизация клиента по IP адресу.
-  Методы: 
+  Методы:
     GET - запросить список адресатов.
     POST - послать сообщение.
 Mongodb используется для хранения сообщений.
 Требования:
-Integrity - функция трансляции сообщения, полученного по API, клиенту 
-socketio должна работать даже при отсуствии db. 
+Integrity - функция трансляции сообщения, полученного по API, клиенту
+socketio должна работать даже при отсуствии db.
 */
 
 const createMock = require("./utils/createMock"),
@@ -92,7 +92,7 @@ function runExpress() {
   app.get("/", function (req, res) {
     console.log('GET on "/" recieved');
     res.sendFile(__dirname + "/index.html");
-    // res.send(`<h2>API for CRM</h2>`);
+    // res.send(`<h2>API for NAV</h2>`);
   });
   //**************************** API GET MESSAGES ******************************/
   app.get("/messages", async function (req, res) {
@@ -127,8 +127,8 @@ function runExpress() {
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify({ users }));
   });
-  //**************************** API POST MESSAGE ******************************/
-  // This service used by CRM and webclient to send target message to
+  //****************** handler for API POST MESSAGE **************************/
+  // This service used by NAV and webclient to send target message to
   // mobile terminal
   app.post("/message", (req, res) => {
     console.log('POST to "/messages" received');
@@ -140,7 +140,7 @@ function runExpress() {
     console.log(
       message.trim() +
         " | sent to " +
-        to +
+        to + "| sent from " + from +
         " | on " +
         Date(timestamp).toString().slice(0, 24)
     );
@@ -149,7 +149,7 @@ function runExpress() {
       message: message,
       to: to,
       confirmed: false,
-      from: from && "CRM",
+      from: from || 'NAV',
       timestamp: Date.now(),
     });
     msgToDb.save();
@@ -201,9 +201,10 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("new-user", (name) => {
-    users[socket.id] = name; // save value pair in users
+  socket.on("new-user", (regName) => {
+    users[socket.id] = regName; // save value pair in users
     console.log("New user registred %s", users);
+    socket.emit("user-confirmed");
   });
   socket.on("disconnect", () => {
     const name = users[socket.id];
