@@ -36,9 +36,9 @@ const createMock = require("./utils/createMock"),
   mongodbUrl = `mongodb://${url}/notify`,
   webUserNames = ["Web-Brat", "Web-Dog", "Web-Guy", "Web-Dev"];
 console.log({ url });
-// this is storage for socketio subscribers
-// it is being hold only in RAM as user dynamiclly
-// reconnects to socketio;
+// this is storage for socket.io subscribers
+// it is being hold only in RAM as user dynamically
+// reconnects to socket.io;
 // holds {socket.id : user} pairs
 const users = {};
 
@@ -48,9 +48,9 @@ const app = require("express")(),
 
 app.use(express.static(path.join(__dirname, "public")));
 
-io.on("connection", (socket) => {
-  console.log("A user connected to socket.io");
-});
+// io.on("connection", (socket) => {
+//   console.log("io.on('connection') event means - user connected to socket.io");
+// });
 
 http.listen(portWs, () => {
   console.log("Express listening on port:", portWs);
@@ -68,7 +68,7 @@ async function start() {
     });
     console.log("Mongo db connected on", mongodbUrl);
     mongoose.connection.on("error", (error) =>
-      console.log("Connection with db lost, tryinbg to reconnect...")
+      console.log("Connection with db lost, trying to reconnect...")
     );
     // createMock();
   } catch (e) {
@@ -90,18 +90,18 @@ function runExpress() {
   //**************************** API GET ROOT/WELCOME **************************/
   // This is welcome message of API
   app.get("/", function (req, res) {
-    console.log('GET on "/" recieved');
+    console.log('GET on "/" received');
     res.sendFile(__dirname + "/index.html");
     // res.send(`<h2>API for NAV</h2>`);
   });
   //**************************** API GET MESSAGES ******************************/
   app.get("/messages", async function (req, res) {
-    console.log('GET on "/messages" recieved');
+    console.log('GET on "/messages" received');
     res.json(await db.getAllMessages());
   });
   //**************************** API GET MESSAGES ******************************/
   app.get("/messages/delete", async function (req, res) {
-    console.log('GET on "/messages/delete" recieved');
+    console.log('GET on "/messages/delete" received');
     mongoose.connection.db.dropCollection("messages", function (err, result) {
       console.log("done");
       res.send("All records deleted");
@@ -109,13 +109,13 @@ function runExpress() {
   });
   //**************************** API GET USERS *********************************/
   app.get("/users", function (req, res) {
-    console.log('GET on "/users" received');
+    console.log('app.get(): GET on "/users" received');
     const usersJson = Object.keys(users).map((key) => {
       return { socketId: key, deviceId: users[key] };
     });
-    console.log(usersJson[0]);
+    console.log("GET response:", usersJson);
     if (typeof usersJson[0] === "undefined") {
-      res.send(`<h2>There is no registred users yet.</h2>`);
+      res.send(`<h2>There is no registered users yet.</h2>`);
     } else {
       res.json(usersJson);
     }
@@ -128,7 +128,7 @@ function runExpress() {
     res.send(JSON.stringify({ users }));
   });
   //****************** handler for API POST MESSAGE **************************/
-  // This service used by NAV and webclient to send target message to
+  // This service used by NAV and web client to send target message to
   // mobile terminal
   app.post("/message", (req, res) => {
     console.log('POST to "/messages" received');
@@ -140,7 +140,9 @@ function runExpress() {
     console.log(
       message.trim() +
         " | sent to " +
-        to + "| sent from " + from +
+        to +
+        "| sent from " +
+        from +
         " | on " +
         Date(timestamp).toString().slice(0, 24)
     );
@@ -149,13 +151,13 @@ function runExpress() {
       message: message,
       to: to,
       confirmed: false,
-      from: from || 'NAV',
+      from: from || "NAV",
       timestamp: Date.now(),
     });
     msgToDb.save();
 
     // check presence of addressee in users
-    // emit message if addresse exists
+    // emit message if addressee exists
     const targetSocket = Object.keys(users).filter((key) => {
       console.log(users[key], to);
       return users[key] === to;
@@ -173,7 +175,7 @@ function runExpress() {
   });
 
   // app.listen(portExpress, () =>
-  //   console.log("Expess listening on port ", portExpress)
+  //   console.log("Express listening on port ", portExpress)
   // );
 }
 //? =========================================================================
@@ -182,15 +184,19 @@ function runExpress() {
 
 //****************************************************************************/
 // Main event loop of Socket.io
-// receives custome method 'send-message' from user and relay emits
+// receives custom method 'send-message' from user and relay emits
 // 'message' to users
 // This is supplementary service which allows mobile users to send messages
 io.on("connection", (socket) => {
-  console.log("New user connected", socket.id, new Date());
-  /// advice username to connected client
-  const name = webUserNames.pop() || "Web-Dev";
-  socket.emit("your-name", name);
-  users[socket.id] = name; // save value pair in users
+  console.log(
+    "New socket connected",
+    socket.id,
+    new Date().toLocaleTimeString()
+  );
+  // /// advice username to connected client
+  // const name = webUserNames.pop() || "Web-Dev";
+  // socket.emit("your-name", name);
+  // users[socket.id] = name; // save value pair in users
 
   socket.on("send-message", (data) => {
     console.log(data);
@@ -203,15 +209,22 @@ io.on("connection", (socket) => {
 
   socket.on("new-user", (regName) => {
     users[socket.id] = regName; // save value pair in users
-    console.log("New user registred %s", users);
+    console.log("New user registered %s", users);
     socket.emit("user-confirmed");
+    socket.broadcast.emit("update-users-list");
   });
-  socket.on("disconnect", () => {
-    const name = users[socket.id];
-    // socket.broadcast.emit("user-disconnected", users[socket.id]);
-    console.log(`${name} socket disconnected!`);
+
+  socket.on("del-user", (regName) => {
+    console.log("del-user request received from socketID", socket.id);
     delete users[socket.id]; // clean up local storage
-    webUserNames.push(name); // return name to the pool
+    socket.broadcast.emit("update-users-list");
+  });
+
+  socket.on("disconnect", () => {
+    // socket.broadcast.emit("user-disconnected", users[socket.id]);
+    console.log(`${socket.id} socket disconnected!`);
+    delete users[socket.id]; // clean up local storage
+    socket.broadcast.emit("update-users-list");
   });
 });
 

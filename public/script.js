@@ -1,7 +1,6 @@
 const urlExpress = "http://localhost";
 const portExpress = 3000;
 
-
 const selectContainer = document.getElementById("select-container");
 const messageForm = document.querySelector(".form-send");
 const messageInput = document.getElementById("message-input");
@@ -11,34 +10,38 @@ const usernameContainer = document.getElementById("username-container");
 const urlApi = urlExpress + ":" + portExpress;
 var username;
 
-function initSocket(deviceID) {
-  /// on 'connection' server advicing username
-  /// Web client should follow this advice,
-  /// (while mobile terminal(bar code scanner) will ignore adviced name)
+const socket = initSocket();
+
+function initSocket() {
   const socket = io("");
-  console.log("Socket.io", socket); //was socket.io
+  console.log("Socket.io", socket);
 
   // binding socket events
 
-  socket.on("your-name", (name) => {
-    console.log(`Server adviced name ${name} ignored!`)
-    getUsers("/users").then((users) => {
-      createDropDown(users);
-    });
-  });
-
+  // ! this event is very important
+  // ! it means server restarted. We need to redeclare our name (deviceID)
   socket.on("connect", () => {
     console.log("socket connected!");
+    username && socket.emit("new-user", username);
   });
 
   socket.on("user-confirmed", () => {
-    document.querySelector('.status').innerText="Status: Websocket connected. Username registration confirmed"
-    document.getElementById('send-button').removeAttribute('disabled');
+    document.querySelector(".status").innerHTML = `
+      <p>Status: Websocket connected. Registered as <strong>${username}</strong></p>`;
+    document.getElementById("send-button").removeAttribute("disabled");
   });
 
   socket.on("message", ({ message, from }) => {
     console.log("Message received", { message });
     addMessage(`${from}: ${message}`);
+  });
+
+  //* notification about changes in users list
+  socket.on("update-users-list", (data) => {
+    console.log("event 'update-users-list received");
+    getUsers("/users").then((users) => {
+      createDropDown(users);
+    });
   });
 
   //? currently not used
@@ -55,17 +58,16 @@ function initSocket(deviceID) {
     console.log("Send-message received:", data);
   });
 
-  // registring own username (aka DeviceID) at server
-  socket.emit('new-user', deviceID);
-
+  return socket;
 }
-//! binding control for Send Message
+
+//! binding control for Send Button
 
 messageForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const message = messageInput.value;
   const to = selectContainer.value;
-  console.log({username})
+  console.log({ username });
   if (selectContainer.selectedIndex === 0) {
     errorMessage("Error: Addressee is not selected");
     return;
@@ -97,11 +99,18 @@ messageForm.addEventListener("submit", (e) => {
 });
 
 //! binding control for Register Button
+
 document.querySelector(".form-username").addEventListener("submit", (e) => {
   e.preventDefault();
+  // if (username) {
+  //   socket.emit("del-user", username);
+  // }
   username = e.target.username.value.trim();
-  console.log({username});
-  initSocket(username);
+  console.log({ username });
+  socket.emit("new-user", username);
+  getUsers("/users").then((users) => {
+    createDropDown(users);
+  });
 });
 
 // append message at the bottom of message view area
@@ -129,9 +138,11 @@ async function getUsers(url) {
 /// create view elements for dropdown user list
 /// input: List<String>
 function createDropDown(users) {
+  document.querySelectorAll(".addressee").forEach((item) => item.remove());
   let optionElement;
   users.forEach((user) => {
     optionElement = document.createElement("option");
+    optionElement.classList.add("addressee");
     optionElement.textContent = user;
     optionElement.value = user;
     selectContainer.append(optionElement);
