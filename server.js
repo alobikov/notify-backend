@@ -23,6 +23,7 @@ socketio должна работать даже при отсуствии db.
 */
 
 const createMock = require("./utils/createMock"),
+  MAX_LIMIT = 21,
   db = require("./utils/mongo"),
   Message = require("./models/Message"), // db record schema
   mongoose = require("mongoose"),
@@ -33,8 +34,7 @@ const createMock = require("./utils/createMock"),
   portExpress = process.env.IP_WEBSITE_PORT || 3002,
   portWs = process.env.IP_SOCKETIO_PORT || 3000,
   url = process.env.DB_IP_ADDRESS || "localhost", // use mongo here if docker-compose deployment
-  mongodbUrl = `mongodb://${url}/notify`,
-  webUserNames = ["Web-Brat", "Web-Dog", "Web-Guy", "Web-Dev"];
+  mongodbUrl = `mongodb://${url}/notify`;
 console.log({ url });
 // this is storage for socket.io subscribers
 // it is being hold only in RAM as user dynamically
@@ -47,10 +47,6 @@ const app = require("express")(),
   io = require("socket.io")(http);
 
 app.use(express.static(path.join(__dirname, "public")));
-
-// io.on("connection", (socket) => {
-//   console.log("io.on('connection') event means - user connected to socket.io");
-// });
 
 http.listen(portWs, () => {
   console.log("Express listening on port:", portWs);
@@ -193,10 +189,6 @@ io.on("connection", (socket) => {
     socket.id,
     new Date().toLocaleTimeString()
   );
-  // /// advice username to connected client
-  // const name = webUserNames.pop() || "Web-Dev";
-  // socket.emit("your-name", name);
-  // users[socket.id] = name; // save value pair in users
 
   socket.on("send-message", (data) => {
     console.log(data);
@@ -208,10 +200,18 @@ io.on("connection", (socket) => {
   });
 
   socket.on("new-user", (regName) => {
-    users[socket.id] = regName; // save value pair in users
-    console.log("New user registered %s", users);
-    socket.emit("user-confirmed");
-    socket.broadcast.emit("update-users-list");
+    console.log("users.length", Object.keys(users).length);
+    if (Object.keys(users).length < MAX_LIMIT) {
+      users[socket.id] = regName; // save key/value pair in users
+      console.log("New user registered %s", users);
+      socket.emit("user-confirm", "confirmed");
+      socket.broadcast.emit("update-users-list");
+    } else {
+      socket.emit("user-confirm", "maximum limit of users reached");
+      console.log(
+        "Received 'new-user' event. Registration rejected. Reason: max_limit "
+      );
+    }
   });
 
   socket.on("del-user", (regName) => {

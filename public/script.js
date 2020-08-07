@@ -1,5 +1,6 @@
 const urlExpress = "http://localhost";
 const portExpress = 3000;
+const version = "1.1.2";
 
 const selectContainer = document.getElementById("select-container");
 const messageForm = document.querySelector(".form-send");
@@ -15,6 +16,9 @@ const socket = initSocket();
 function initSocket() {
   const socket = io("");
   console.log("Socket.io", socket);
+  document.querySelector(".status").innerHTML = `
+      <p>Status: Websocket connected, user not registered.</p>`;
+  document.querySelector(".version").textContent = `version ${version}`;
 
   // binding socket events
 
@@ -22,13 +26,31 @@ function initSocket() {
   // ! it means server restarted. We need to redeclare our name (deviceID)
   socket.on("connect", () => {
     console.log("socket connected!");
+
+    // if web client has been registered then re-register with the same name
     username && socket.emit("new-user", username);
+
+    // built new users dropdown list after random delay
+    new Promise((resolve) => setTimeout(resolve, Math.random() * 3000)).then(
+      () => {
+        getUsers("/users").then((users) => {
+          createDropDown(users);
+        });
+      }
+    );
   });
 
-  socket.on("user-confirmed", () => {
-    document.querySelector(".status").innerHTML = `
-      <p>Status: Websocket connected. Registered as <strong>${username}</strong></p>`;
-    document.getElementById("send-button").removeAttribute("disabled");
+  socket.on("user-confirm", (response) => {
+    if (response === "confirmed") {
+      document.querySelector(".status").innerHTML = `
+        <p>Status: Websocket connected. Registered as <strong>${username}</strong></p>`;
+      document.querySelector(".status").style.color = "black";
+      document.getElementById("send-button").removeAttribute("disabled");
+    } else {
+      document.querySelector(".status").innerHTML = `
+      <p>Status: Websocket connected. Registration rejected: ${response}</p>`;
+      document.querySelector(".status").style.color = "red";
+    }
   });
 
   socket.on("message", ({ message, from }) => {
@@ -52,6 +74,14 @@ function initSocket() {
   //? currently not used
   socket.on("user-disconnected", (name) => {
     console.log(`${name} disconnected from socket.io :(`);
+  });
+
+  socket.on("disconnect", (name) => {
+    console.log(`Socket connection lost!`);
+    document.querySelector(".status").innerHTML = `
+    <p>Status: Websocket connection lost!</p>`;
+    document.querySelector(".status").style.color = "red";
+    document.getElementById("send-button").setAttribute("disabled", "");
   });
 
   socket.on("send-message", (data) => {
