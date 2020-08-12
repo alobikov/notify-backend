@@ -18,4 +18,9 @@ async function getAllMessages() {
   return messages;
 }
 
-module.exports = { getAllMessages };
+async function getAllUserMessages(user) {
+  const messages = await Message.find({ to: user });
+  return messages;
+}
+
+module.exports = { getAllMessages, getAllUserMessages };

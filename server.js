@@ -23,6 +23,7 @@ socketio должна работать даже при отсуствии db.
 */
 
 const createMock = require("./utils/createMock"),
+  server_version = "1.2.0",
   MAX_LIMIT = 21,
   db = require("./utils/mongo"),
   Message = require("./models/Message"), // db record schema
@@ -95,13 +96,18 @@ function runExpress() {
     console.log('GET on "/messages" received');
     res.json(await db.getAllMessages());
   });
-  //**************************** API GET MESSAGES ******************************/
+  //************************ API GET DELETE MESSAGES ***************************/
   app.get("/messages/delete", async function (req, res) {
     console.log('GET on "/messages/delete" received');
     mongoose.connection.db.dropCollection("messages", function (err, result) {
       console.log("done");
       res.send("All records deleted");
     });
+  });
+  //**************************** API GET USER MESSAGES *************************/
+  app.get("/messages/:userId", async function (req, res) {
+    console.log(`GET request for messages for ${JSON.stringify(req.params)}`);
+    res.json(await db.getAllUserMessages(req.params.userId));
   });
   //**************************** API GET USERS *********************************/
   app.get("/users", function (req, res) {
