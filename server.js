@@ -177,11 +177,8 @@ function runExpress() {
 
     // check presence of addressee in users
     // emit message if addressee exists
-    const targetSocket = Object.keys(users).filter((key) => {
-      console.log(users[key], to);
-      return users[key] === to;
-    })[0];
-    console.log({ targetSocket });
+    const targetSocket = Object.keys(users).find((key) => users[key] === to);
+    console.log(`Message recipient "${to}" found:`, { targetSocket });
     if (targetSocket) {
       console.log("emitting personally");
       io.to(targetSocket).emit("message", {
