@@ -23,4 +23,10 @@ async function getAllUserMessages(user) {
   return messages;
 }
 
-module.exports = { getAllMessages, getAllUserMessages };
+async function deleteMessageById(id) {
+  try {
+    return await Message.findByIdAndRemove(id);
+  } catch (e) {}
+}
+
+module.exports = { getAllMessages, getAllUserMessages, deleteMessageById };

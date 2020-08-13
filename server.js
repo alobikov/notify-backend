@@ -91,11 +91,13 @@ function runExpress() {
     res.sendFile(__dirname + "/index.html");
     // res.send(`<h2>API for NAV</h2>`);
   });
+
   //**************************** API GET MESSAGES ******************************/
   app.get("/messages", async function (req, res) {
     console.log('GET on "/messages" received');
     res.json(await db.getAllMessages());
   });
+
   //************************ API GET DELETE MESSAGES ***************************/
   app.get("/messages/delete", async function (req, res) {
     console.log('GET on "/messages/delete" received');
@@ -104,11 +106,24 @@ function runExpress() {
       res.send("All records deleted");
     });
   });
+
+  //******************** API GET DELETE MESSAGE BY ID ***********************/
+  app.get("/messages/deleteId/:id", async function (req, res) {
+    console.log('GET on "/messages/deleteId" received', req.params.id);
+    const result = await db.deleteMessageById(req.params.id);
+    if (result != null && typeof result === "object") {
+      res.send(`Successfully deleted ${JSON.stringify(result)}`);
+    } else {
+      res.send("failed");
+    }
+  });
+
   //**************************** API GET USER MESSAGES *************************/
   app.get("/messages/:userId", async function (req, res) {
     console.log(`GET request for messages for ${JSON.stringify(req.params)}`);
     res.json(await db.getAllUserMessages(req.params.userId));
   });
+
   //**************************** API GET USERS *********************************/
   app.get("/users", function (req, res) {
     console.log('app.get(): GET on "/users" received');
@@ -122,6 +137,7 @@ function runExpress() {
       res.json(usersJson);
     }
   });
+
   //**************************** API GET USERS AND ID **************************/
   app.get("/users_id", function (req, res) {
     console.log('GET on "/users_id" received');
@@ -129,6 +145,7 @@ function runExpress() {
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify({ users }));
   });
+
   //****************** handler for API POST MESSAGE **************************/
   // This service used by NAV and web client to send target message to
   // mobile terminal
