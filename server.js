@@ -173,21 +173,29 @@ function runExpress() {
       from: from || "NAV",
       timestamp: Date.now(),
     });
-    msgToDb.save();
-
+    msgToDb.save((err, doc) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log("Document inserted in db successfully");
+        const targetSocket = Object.keys(users).find(
+          (key) => users[key] === to
+        );
+        console.log(`Message recipient "${to}" found:`, { targetSocket });
+        if (targetSocket) {
+          console.log("emitting message personally");
+          io.to(targetSocket).emit("message", {
+            message: message,
+            timestamp: timestamp,
+            to: to,
+            from: from,
+            objectId: doc._id.toString(),
+          });
+        }
+      }
+    });
     // check presence of addressee in users
     // emit message if addressee exists
-    const targetSocket = Object.keys(users).find((key) => users[key] === to);
-    console.log(`Message recipient "${to}" found:`, { targetSocket });
-    if (targetSocket) {
-      console.log("emitting personally");
-      io.to(targetSocket).emit("message", {
-        message: message,
-        timestamp: timestamp,
-        to: to,
-        from: from,
-      });
-    }
   });
 
   // app.listen(portExpress, () =>
