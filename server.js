@@ -23,7 +23,7 @@ socketio должна работать даже при отсуствии db.
 */
 
 const createMock = require("./utils/createMock"),
-  server_version = "1.2.0",
+  serverVersion = "1.2.0",
   MAX_LIMIT = 21,
   db = require("./utils/mongo"),
   Message = require("./models/Message"), // db record schema
@@ -96,6 +96,12 @@ function runExpress() {
   app.get("/messages", async function (req, res) {
     console.log('GET on "/messages" received');
     res.json(await db.getAllMessages());
+  });
+
+  //**************************** API GET MESSAGES ******************************/
+  app.get("/version", async function (req, res) {
+    console.log('GET on "/version" received');
+    res.send(`\nNotify Backend version: ${serverVersion}`);
   });
 
   //************************ API GET DELETE MESSAGES ***************************/
