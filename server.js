@@ -45,7 +45,7 @@ var logger = winston.createLogger({
 logger.info("Notify server started!");
 
 const createMock = require("./utils/createMock"),
-  serverVersion = "1.2.0",
+  serverVersion = "1.3.1",
   MAX_LIMIT = 21,
   db = require("./utils/mongo"),
   Message = require("./models/Message"), // db record schema
