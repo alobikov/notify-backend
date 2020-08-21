@@ -26,7 +26,7 @@ const { format } = require("winston");
 require("winston-daily-rotate-file");
 
 var transport = new winston.transports.DailyRotateFile({
-  filename: "./logs/notify-%DATE%.log",
+  filename: __dirname + "/logs/notify-%DATE%.log",
   datePattern: "YYYY-MM-DD-HH",
   zippedArchive: true,
   maxSize: "20m",
