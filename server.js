@@ -242,7 +242,7 @@ io.on("connection", (socket) => {
   logger.info(`New socket connected ${socket.id}`);
 
   socket.on("send-message", (data) => {
-    logger.info(`send-message received with data: ${JSON.stringify(data)}`);
+    logger.info(`'send-message' received with data: ${JSON.stringify(data)}`);
     socket.broadcast.emit("message", {
       message: data.message,
       from: data.from,
@@ -255,7 +255,7 @@ io.on("connection", (socket) => {
     if (Object.keys(users).length < MAX_LIMIT) {
       users[socket.id] = regName; // save key/value pair in users
       console.table(users);
-      logger.info(`users = ${JSON.stringify(users)}`);
+      logger.info(`'new-user' received, users = ${JSON.stringify(users)}`);
       socket.emit("user-confirm", "confirmed");
       socket.broadcast.emit("update-users-list");
     } else {
