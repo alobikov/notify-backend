@@ -128,7 +128,7 @@ function runExpress() {
   //**************************** API GET MESSAGES ******************************/
   app.get("/version", async function (req, res) {
     logger.info('GET on "/version" received');
-    res.send(`\nNotify Backend version: ${serverVersion}`);
+    res.send(`Notify Backend version: ${serverVersion}`);
   });
 
   //************************ API GET DELETE MESSAGES ***************************/
